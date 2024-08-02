@@ -1,15 +1,18 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-function App() {
-  const [count, setCount] = useState(0)
+import Signin from './pages/SignIn.jsx';
+import PrivateRoute from './components/PrivateRoute.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
+export default function App() {
   return (
-    <>
-      <div className='text-4xl font-bold text-center'>
-        Admin Support Portal
-      </div>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Signin />} />
+        <Route element={<PrivateRoute />}>
+          <Route path='/Dashboard' element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App

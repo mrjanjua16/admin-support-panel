@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes.js';
 import taskRoutes from './routes/task.routes.js';
-
-
+import specialityRoutes from './routes/speciality.routes.js';
+import clientRoutes from './routes/client.routes.js';
 dotenv.config();
 
 mongoose
@@ -24,6 +24,8 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/task', taskRoutes);
+app.use('/api/speciality', specialityRoutes);
+app.use('/api/client', clientRoutes);
 
 app.listen(
     4000,

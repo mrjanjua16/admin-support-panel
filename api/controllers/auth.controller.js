@@ -69,3 +69,13 @@ export const login = async (req, res, next) => {
         return next(errorHandler(error.code || 500, error.message || "Internal server error"));
     }
 }
+
+export const logout = async (req, res, next) => {
+    try {
+        res.clearCookie('access_token').status(200).json({
+            message: "User signed out successfully"
+        });
+    } catch (error) {
+        return next(errorHandler(error.code || 500, error.message || "Internal server error"));
+    }
+}

@@ -24,15 +24,19 @@ const taskSchema = new mongoose.Schema({
     },
     assigned_to: {
         type: mongoose.Schema.Types.ObjectId, ref: "User",
+        default: null,
     },
     team: {
-        type: mongoose.Schema.Types.ObjectId, ref: "Team",
+        type: mongoose.Schema.Types.ObjectId, ref: "User",
+        default: null,
     },
     internal_assigned_to: {
         type: mongoose.Schema.Types.ObjectId, ref: "User",
+        default: null,
     },
     due_date: {
         type: Date,
+        default: null,
     },
     priority: {
         type: String,

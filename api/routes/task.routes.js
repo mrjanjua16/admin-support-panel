@@ -5,6 +5,6 @@ import { verifyToken } from '../utils/verifyToken.js';
 const router = express.Router();
 
 router.post('/create-task', verifyToken,createTask);
-router.get('/get-tasks', verifyToken, getTasks);
+router.post('/get-tasks', verifyToken, getTasks);
 
 export default router;

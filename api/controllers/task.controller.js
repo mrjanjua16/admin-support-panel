@@ -4,9 +4,9 @@ import { errorHandler } from '../utils/error.js';
 import Client from '../models/client.model.js';
 
 export const createTask = async (req, res, next) => {
-    const { description, customer_id, assigneeId, status, team, priority, dueDate } = req.body;
+    const { description, customerId, assigneeId, status, team, priority, dueDate } = req.body;
 
-    const client = await Client.findOne({ customer_id: Number(customer_id) });
+    const client = await Client.findOne({ customer_id: Number(customerId) });
 
     if(!client) {
         return next(errorHandler(404, "Client not found"));
@@ -54,9 +54,11 @@ export const getTasks = async (req, res, next) => {
         if(assigned_to) query.assigned_to = assigned_to;
 
         console.log("query: ", query);
+
         const tasks = await Task.find(query).populate('task_num client_id reporter assigned_to team due_date');
 
         console.log("tasks: ", tasks);
+        
         if (!tasks) {
             return next(errorHandler(404, "No tasks found"));
         } else {

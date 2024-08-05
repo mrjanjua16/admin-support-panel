@@ -1,14 +1,27 @@
 import { useEffect, useState } from 'react';
 import logo from '../assets/react.svg';
 import { Link, useNavigate } from 'react-router-dom';
-import { Table } from 'flowbite-react';
+import { Table, Modal, Button, TextInput, Select, Label } from 'flowbite-react';
 import { useSelector } from 'react-redux';
+
+import Filter from './Filter.jsx';
+
 
 export default function Tasks() {
     const { currentUser } = useSelector(state => state.user);
     const [tasks, setTasks] = useState([]);
+    const [selectedTask, setSelectedTask] = useState([]);
+    const [descLength, setDescLength] = useState(40);
+    const [filter, setFilter] = useState(false);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({});
+
+    const [clients, setClients] = useState([]);
+    const [teams, setTeams] = useState([]);
+    const [status, setStatus] = useState([]);
+    const [priority, setPriority] = useState([]);
 
     useEffect(() => {
         if (!currentUser) {
@@ -22,7 +35,6 @@ export default function Tasks() {
                     assigned_to: currentUser.user._id,
                     status: "Pending"
                 };
-                console.log('Fetching tasks with criteria:', task_criteria);
                 const response = await fetch('/api/task/get-tasks', {
                     method: 'POST',
                     headers: {
@@ -47,6 +59,7 @@ export default function Tasks() {
         };
 
         fetchTasks();
+
     }, [currentUser, navigate]);
 
     if (loading) {
@@ -64,10 +77,12 @@ export default function Tasks() {
                         <Link
                             className="cursor-pointer border border-blue-600 rounded-lg p-2 text-blue-600 inline-block"
                             role="button"
+                            onClick={() => setFilter(true)}
                         >
                             <img src={logo} alt="logo" />
                         </Link>
                     </div>
+                    {filter ? <Filter /> : null}
                     <div className="ml-1">
                         <input
                             className="border border-green-600 rounded p-2 text-green-600 text-sm cursor-pointer"
@@ -78,36 +93,34 @@ export default function Tasks() {
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <div className="max-h-[400px] overflow-y-auto"> {/* Added wrapper for vertical scrolling */}
-                    <Table hoverable className="shadow-md min-w-[1200px]">
-                        <Table.Head>
-                            <Table.HeadCell className="whitespace-nowrap">Task #</Table.HeadCell>
-                            <Table.HeadCell className="whitespace-nowrap">Description</Table.HeadCell>
-                            <Table.HeadCell className="whitespace-nowrap">Status</Table.HeadCell>
-                            <Table.HeadCell className="whitespace-nowrap">Assignee</Table.HeadCell>
-                            <Table.HeadCell className="whitespace-nowrap">Team</Table.HeadCell>
-                            <Table.HeadCell className="whitespace-nowrap">Internal Assignee</Table.HeadCell>
-                            <Table.HeadCell className="whitespace-nowrap">Created At</Table.HeadCell>
-                            <Table.HeadCell className="whitespace-nowrap">Due Date</Table.HeadCell>
-                            <Table.HeadCell className="whitespace-nowrap">Last Updated</Table.HeadCell>
-                        </Table.Head>
-                        <Table.Body>
-                            {tasks.map((task) => (
-                                <Table.Row key={task._id}>
-                                    <Table.Cell className="whitespace-nowrap">{task.task_num}</Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap">{task.description}</Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap">{task.status}</Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap">{task.assigned_to?.name}</Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap">{task.team?.name}</Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap">{task.internal_assigned_to?.name || 'N/A'}</Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap">{new Date(task.createdAt).toLocaleDateString()}</Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap">{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'N/A'}</Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap">{new Date(task.updatedAt).toLocaleDateString()}</Table.Cell>
-                                </Table.Row>
-                            ))}
-                        </Table.Body>
-                    </Table>
-                </div>
+                <Table hoverable className="shadow-md min-w-[1200px]">
+                    <Table.Head>
+                        <Table.HeadCell className="whitespace-nowrap">Task #</Table.HeadCell>
+                        <Table.HeadCell >Description</Table.HeadCell>
+                        <Table.HeadCell className="whitespace-nowrap">Status</Table.HeadCell>
+                        <Table.HeadCell className="whitespace-nowrap">Assignee</Table.HeadCell>
+                        <Table.HeadCell className="whitespace-nowrap">Team</Table.HeadCell>
+                        <Table.HeadCell className="whitespace-nowrap">Internal Assignee</Table.HeadCell>
+                        <Table.HeadCell className="whitespace-nowrap">Created At</Table.HeadCell>
+                        <Table.HeadCell className="whitespace-nowrap">Due Date</Table.HeadCell>
+                        <Table.HeadCell className="whitespace-nowrap">Last Updated</Table.HeadCell>
+                    </Table.Head>
+                    <Table.Body className="text-black">
+                        {tasks.map((task) => (
+                            <Table.Row key={task._id}>
+                                <Table.Cell className="whitespace-nowrap">{task.task_num}</Table.Cell>
+                                <Table.Cell>{task.description.length > descLength ? task.description.substring(0, descLength) + '...' : task.description}</Table.Cell>
+                                <Table.Cell className="whitespace-nowrap">{task.status}</Table.Cell>
+                                <Table.Cell className="whitespace-nowrap">{task.assigned_to?.name}</Table.Cell>
+                                <Table.Cell className="whitespace-nowrap">{task.team?.name}</Table.Cell>
+                                <Table.Cell className="whitespace-nowrap">{task.internal_assigned_to?.name || 'N/A'}</Table.Cell>
+                                <Table.Cell className="whitespace-nowrap">{new Date(task.createdAt).toLocaleDateString()}</Table.Cell>
+                                <Table.Cell className="whitespace-nowrap">{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'N/A'}</Table.Cell>
+                                <Table.Cell className="whitespace-nowrap">{new Date(task.updatedAt).toLocaleDateString()}</Table.Cell>
+                            </Table.Row>
+                        ))}
+                    </Table.Body>
+                </Table>
             </div>
         </div>
     );
